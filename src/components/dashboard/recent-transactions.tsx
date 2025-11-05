@@ -37,11 +37,11 @@ export function RecentTransactions() {
               <TableRow key={transaction.id}>
                 <TableCell className="font-medium">{transaction.description}</TableCell>
                 <TableCell>
-                  <Badge variant={transaction.type === 'credit' ? 'default' : 'destructive'} className={transaction.type === 'credit' ? 'bg-green-600' : ''}>
+                  <Badge variant={transaction.type === 'credit' ? 'default' : 'destructive'} className={transaction.type === 'credit' ? 'bg-blue-600' : ''}>
                     {transaction.type}
                   </Badge>
                 </TableCell>
-                <TableCell className={`text-right font-medium ${transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                <TableCell className={`text-right font-medium ${transaction.type === 'credit' ? 'text-blue-600' : 'text-red-600'}`}>
                   {transaction.type === 'credit' ? '+' : '-'}
                   {transaction.amount.toLocaleString('en-IN', {
                     style: 'currency',
