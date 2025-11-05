@@ -45,7 +45,7 @@ export function ProfitLossChart() {
                 axisLine={false}
               />
               <YAxis
-                tickFormatter={(value) => `$${value / 1000}k`}
+                tickFormatter={(value) => `₹${value / 1000}k`}
               />
               <ChartTooltip
                 cursor={false}

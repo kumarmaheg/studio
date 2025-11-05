@@ -14,27 +14,27 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Revenue"
-          value={financialOverview.totalRevenue.toLocaleString('en-US', {
+          value={financialOverview.totalRevenue.toLocaleString('en-IN', {
             style: 'currency',
-            currency: 'USD',
+            currency: 'INR',
           })}
           icon={DollarSign}
           description="Total income from sales"
         />
         <StatsCard
           title="Net Profit"
-          value={financialOverview.netProfit.toLocaleString('en-US', {
+          value={financialOverview.netProfit.toLocaleString('en-IN', {
             style: 'currency',
-            currency: 'USD',
+            currency: 'INR',
           })}
           icon={TrendingUp}
           description="After all costs and expenses"
         />
         <StatsCard
           title="Total Expenses"
-          value={financialOverview.totalExpenses.toLocaleString('en-US', {
+          value={financialOverview.totalExpenses.toLocaleString('en-IN', {
             style: 'currency',
-            currency: 'USD',
+            currency: 'INR',
           })}
           icon={CreditCard}
           description="Rent, salaries, marketing etc."

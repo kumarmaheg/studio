@@ -19,7 +19,7 @@ export const columns = [
     header: 'Amount',
     cell: (row: Investment) => (
       <div className="font-medium text-right">
-        {row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+        {row.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
       </div>
     ),
   },

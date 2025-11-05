@@ -28,7 +28,7 @@ export const columns = [
     header: 'Total',
     cell: (row: Purchase) => (
       <div className="font-medium text-right">
-        {row.total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+        {row.total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
       </div>
     ),
   },

@@ -30,7 +30,7 @@ export const columns = [
     header: 'Price',
     cell: (row: Sale) => (
       <div className="text-right">
-        {row.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+        {row.price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
       </div>
     ),
   },
@@ -39,7 +39,7 @@ export const columns = [
     header: 'Tax',
     cell: (row: Sale) => (
         <div className="text-right">
-          {row.tax.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+          {row.tax.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
         </div>
       ),
   },
@@ -48,7 +48,7 @@ export const columns = [
     header: 'Total',
     cell: (row: Sale) => (
         <div className="font-medium text-right">
-          {row.total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+          {row.total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
         </div>
       ),
   },

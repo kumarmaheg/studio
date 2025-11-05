@@ -43,9 +43,9 @@ export function RecentTransactions() {
                 </TableCell>
                 <TableCell className={`text-right font-medium ${transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
                   {transaction.type === 'credit' ? '+' : '-'}
-                  {transaction.amount.toLocaleString('en-US', {
+                  {transaction.amount.toLocaleString('en-IN', {
                     style: 'currency',
-                    currency: 'USD',
+                    currency: 'INR',
                   })}
                 </TableCell>
               </TableRow>
