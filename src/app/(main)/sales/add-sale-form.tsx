@@ -6,19 +6,21 @@ import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 
 export function AddSaleForm({ onSaleAdded }: { onSaleAdded: () => void }) {
-  const [product, setProduct] = useState('');
+  const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
   const [customer, setCustomer] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newSale = {
-      product,
+      product: itemName,
       quantity: parseInt(quantity, 10),
       price: parseFloat(price),
       customer,
+      date,
     };
 
     const res = await fetch('/api/sales', {
@@ -37,14 +39,14 @@ export function AddSaleForm({ onSaleAdded }: { onSaleAdded: () => void }) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="product" className="text-right">
-          Product
+        <Label htmlFor="itemName" className="text-right">
+          Item Name
         </Label>
         <Input
-          id="product"
-          name="product"
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}
+          id="itemName"
+          name="itemName"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
           className="col-span-3"
         />
       </div>
@@ -84,6 +86,19 @@ export function AddSaleForm({ onSaleAdded }: { onSaleAdded: () => void }) {
           name="customer"
           value={customer}
           onChange={(e) => setCustomer(e.target.value)}
+          className="col-span-3"
+        />
+      </div>
+      <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="date" className="text-right">
+          Date
+        </Label>
+        <Input
+          id="date"
+          name="date"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
           className="col-span-3"
         />
       </div>

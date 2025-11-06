@@ -9,11 +9,11 @@ export async function GET(_req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const db = await openDb();
-  const { product, quantity, price, customer } = await req.json();
+  const { product, quantity, price, customer, date } = await req.json();
 
   const result = await db.run(
-    'INSERT INTO sales (product, quantity, price, customer) VALUES (?, ?, ?, ?)',
-    [product, quantity, price, customer]
+    'INSERT INTO sales (product, quantity, price, customer, date) VALUES (?, ?, ?, ?, ?)',
+    [product, quantity, price, customer, date]
   );
 
   return NextResponse.json({ id: result.lastID });
