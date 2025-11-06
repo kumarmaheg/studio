@@ -3,7 +3,6 @@
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { sales } from '@/lib/data';
 import { DataTable } from '@/components/data-table';
 import { columns } from './columns';
 import {
@@ -14,8 +13,21 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useEffect, useState } from 'react';
 
 export default function SalesPage() {
+  const [sales, setSales] = useState([]);
+
+  useEffect(() => {
+    async function fetchSales() {
+      const res = await fetch('/api/sales');
+      const data = await res.json();
+      setSales(data);
+    }
+
+    fetchSales();
+  }, []);
+
   return (
     <>
       <PageHeader title="Sales">
