@@ -1,7 +1,6 @@
 'use client';
 
 import type { Sale } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import {
@@ -11,14 +10,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ColumnDef } from '@tanstack/react-table';
 
-export const columns = [
+export const columns: ColumnDef<Sale>[] = [
   {
     accessorKey: 'id',
     header: 'Sale ID',
   },
   {
-    accessorKey: 'itemName',
+    accessorKey: 'product',
     header: 'Item Name',
   },
   {
@@ -28,38 +28,19 @@ export const columns = [
   {
     accessorKey: 'price',
     header: 'Price',
-    cell: (row: Sale) => (
+    cell: ({ row }) => (
       <div className="text-right">
-        {row.price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+        {row.original.price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
       </div>
     ),
-  },
-  {
-    accessorKey: 'tax',
-    header: 'Tax',
-    cell: (row: Sale) => (
-        <div className="text-right">
-          {row.tax.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
-        </div>
-      ),
-  },
-  {
-    accessorKey: 'total',
-    header: 'Total',
-    cell: (row: Sale) => (
-        <div className="font-medium text-right">
-          {row.total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
-        </div>
-      ),
   },
   {
     accessorKey: 'date',
     header: 'Date',
   },
   {
-    accessorKey: 'actions',
-    header: '',
-    cell: (row: Sale) => (
+    id: 'actions',
+    cell: ({ row }) => (
       <div className="text-right">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
