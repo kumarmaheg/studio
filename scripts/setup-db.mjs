@@ -5,6 +5,9 @@ async function setup() {
   const db = await open({ filename: './database.db', driver: sqlite3.Database });
   await db.migrate({ migrationsPath: './migrations' });
 
+  // Clear the sales table before inserting new data
+  await db.exec('DELETE FROM sales');
+
   const sales = [
     {
       id: 1,
