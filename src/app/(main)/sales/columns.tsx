@@ -10,9 +10,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ColumnDef } from '@tanstack/react-table';
 
-export const columns: ColumnDef<Sale>[] = [
+export const columns = [
   {
     accessorKey: 'id',
     header: 'Sale ID',
@@ -28,23 +27,20 @@ export const columns: ColumnDef<Sale>[] = [
   {
     accessorKey: 'price',
     header: 'Price',
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue('price'));
-      const formatted = new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-      }).format(price);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+    cell: (row: Sale) => (
+      <div className="text-right">
+        {row.price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+      </div>
+    ),
   },
   {
     accessorKey: 'date',
     header: 'Date',
   },
   {
-    id: 'actions',
-    cell: ({ row }) => (
+    accessorKey: 'actions',
+    header: '',
+    cell: (row: Sale) => (
       <div className="text-right">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
