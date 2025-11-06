@@ -28,11 +28,15 @@ export const columns: ColumnDef<Sale>[] = [
   {
     accessorKey: 'price',
     header: 'Price',
-    cell: ({ row }) => (
-      <div className="text-right">
-        {row.original.price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const price = parseFloat(row.getValue('price'));
+      const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+      }).format(price);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
   },
   {
     accessorKey: 'date',
