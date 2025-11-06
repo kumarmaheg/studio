@@ -14,26 +14,33 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useEffect, useState } from 'react';
+import { AddSaleForm } from './add-sale-form';
 
 export default function SalesPage() {
   const [sales, setSales] = useState([]);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  async function fetchSales() {
+    const res = await fetch('/api/sales');
+    const data = await res.json();
+    setSales(data);
+  }
 
   useEffect(() => {
-    async function fetchSales() {
-      const res = await fetch('/api/sales');
-      const data = await res.json();
-      setSales(data);
-    }
-
     fetchSales();
   }, []);
+
+  const handleSaleAdded = () => {
+    fetchSales();
+    setIsSheetOpen(false);
+  };
 
   return (
     <>
       <PageHeader title="Sales">
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <Button>
+            <Button onClick={() => setIsSheetOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Sale
             </Button>
@@ -45,7 +52,9 @@ export default function SalesPage() {
                 Record a new sales transaction. Fill in the details below.
               </SheetDescription>
             </SheetHeader>
-            <div className="py-4">{/* Add Sale Form will go here */}</div>
+            <div className="py-4">
+              <AddSaleForm onSaleAdded={handleSaleAdded} />
+            </div>
           </SheetContent>
         </Sheet>
       </PageHeader>
