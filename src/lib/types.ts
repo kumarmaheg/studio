@@ -31,7 +31,7 @@ export type InventoryItem = {
   sku: string;
   category: string;
   stk_qty: number;
-  lowStockThreshold: number;
+  low_stock_threshold: number;
   purchase_price: number;
   selling_price: number;
 };

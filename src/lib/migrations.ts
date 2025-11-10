@@ -6,7 +6,6 @@ import { openDb } from './db';
 export async function up() {
   const db = await openDb();
 
-  // Drop the table if it exists to ensure a clean slate, then recreate with the correct schema
   await db.exec('DROP TABLE IF EXISTS sales');
 
   await db.exec(`
@@ -31,8 +30,6 @@ export async function up() {
 
 export async function down() {
   const db = await openDb();
-
   await db.exec('DROP TABLE IF EXISTS sales');
-
   console.log('Migration: DOWN complete');
 }

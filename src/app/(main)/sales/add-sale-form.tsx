@@ -136,11 +136,6 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           price: numericSellingPrice,
           customer,
           date,
-          item_name: selectedItem.name,
-          purchase_price: numericPurchasePrice,
-          discount: numericDiscount,
-          final_price: finalPrice,
-          profit_amount: profitAmount,
         }),
       });
 
