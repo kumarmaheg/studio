@@ -22,7 +22,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [selectedSku, setSelectedSku] = useState<string | undefined>(undefined);
   const [quantity, setQuantity] = useState('1');
-  const [salePrice, setSalePrice] = useState('');
+  const [sellingPrice, setSellingPrice] = useState('');
   const [discount, setDiscount] = useState('0');
   const [customer, setCustomer] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -46,16 +46,16 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
   useEffect(() => {
     if (selectedItem) {
       // The API returns sale_price, which we should use.
-      setSalePrice(String(selectedItem.sale_price || selectedItem.price));
+      setSellingPrice(String(selectedItem.sale_price || selectedItem.price));
     }
   }, [selectedItem]);
 
   const numericQuantity = parseFloat(quantity) || 0;
-  const numericSalePrice = parseFloat(salePrice) || 0;
+  const numericSellingPrice = parseFloat(sellingPrice) || 0;
   const numericDiscount = parseFloat(discount) || 0;
 
-  const finalPrice = numericSalePrice * numericQuantity - numericDiscount;
-  const profitAmount = finalPrice - purchasePrice * numericQuantity;
+  const finalPrice = numericSellingPrice * numericQuantity - numericDiscount;
+  const profitAmount = finalPrice - (purchasePrice || 0) * numericQuantity;
 
   const handleSkuChange = (sku: string) => {
     setSelectedSku(sku);
@@ -88,7 +88,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
       // Reset form
       setSelectedSku(undefined);
       setQuantity('1');
-      setSalePrice('');
+      setSellingPrice('');
       setDiscount('0');
       setCustomer('');
       setDate(new Date().toISOString().split('T')[0]);
@@ -158,15 +158,15 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="salePrice" className="text-right">
-            Sale Price
+          <Label htmlFor="sellingPrice" className="text-right">
+            Selling Price
           </Label>
           <Input
-            id="salePrice"
+            id="sellingPrice"
             type="number"
             step="0.01"
-            value={salePrice}
-            onChange={(e) => setSalePrice(e.target.value)}
+            value={sellingPrice}
+            onChange={(e) => setSellingPrice(e.target.value)}
             className="col-span-3"
           />
         </div>
