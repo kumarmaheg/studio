@@ -18,7 +18,7 @@ export const columns: ColumnDef<Sale>[] = [
     header: 'Sale ID',
   },
   {
-    accessorKey: 'product',
+    accessorKey: 'item_name',
     header: 'Item Name',
   },
   {
