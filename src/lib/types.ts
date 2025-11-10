@@ -25,8 +25,8 @@ export type InventoryItem = {
   category: string;
   stock: number;
   lowStockThreshold: number;
-  price: number;
-  sale_price: number;
+  purchase_price: number;
+  selling_price: number;
 };
 
 export type Expense = {

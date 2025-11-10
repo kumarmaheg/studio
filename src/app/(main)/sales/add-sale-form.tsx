@@ -10,7 +10,8 @@ interface InventoryItem {
   id: number;
   sku: string;
   name: string;
-  price: number;
+  purchase_price: number;
+  selling_price: number;
   [key: string]: any;
 }
 
@@ -23,6 +24,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
   const [selectedSku, setSelectedSku] = useState<string | undefined>(undefined);
   const [quantity, setQuantity] = useState('1');
   const [sellingPrice, setSellingPrice] = useState('');
+  const [purchasePrice, setPurchasePrice] = useState('');
   const [discount, setDiscount] = useState('0');
   const [customer, setCustomer] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -41,21 +43,24 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
     : null;
 
   const itemName = selectedItem?.name ?? '';
-  const purchasePrice = selectedItem ? selectedItem.price : 0;
-
+  
   useEffect(() => {
     if (selectedItem) {
-      // The API returns sale_price, which we should use.
-      setSellingPrice(String(selectedItem.sale_price || selectedItem.price));
+      setPurchasePrice(String(selectedItem.purchase_price || 0));
+      setSellingPrice(String(selectedItem.selling_price || 0));
+    } else {
+        setPurchasePrice('');
+        setSellingPrice('');
     }
   }, [selectedItem]);
 
   const numericQuantity = parseFloat(quantity) || 0;
   const numericSellingPrice = parseFloat(sellingPrice) || 0;
   const numericDiscount = parseFloat(discount) || 0;
+  const numericPurchasePrice = parseFloat(purchasePrice) || 0;
 
   const finalPrice = numericSellingPrice * numericQuantity - numericDiscount;
-  const profitAmount = finalPrice - (purchasePrice || 0) * numericQuantity;
+  const profitAmount = finalPrice - numericPurchasePrice * numericQuantity;
 
   const handleSkuChange = (sku: string) => {
     setSelectedSku(sku);
@@ -89,6 +94,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
       setSelectedSku(undefined);
       setQuantity('1');
       setSellingPrice('');
+      setPurchasePrice('');
       setDiscount('0');
       setCustomer('');
       setDate(new Date().toISOString().split('T')[0]);
@@ -152,7 +158,8 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           <Input
             id="purchasePrice"
             type="number"
-            value={(purchasePrice || 0).toFixed(2)}
+            value={purchasePrice}
+            onChange={(e) => setPurchasePrice(e.target.value)}
             className="col-span-3"
             readOnly
           />

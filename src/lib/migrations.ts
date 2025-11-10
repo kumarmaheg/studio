@@ -21,10 +21,6 @@ export async function up() {
     );
   `);
 
-  await db.exec('ALTER TABLE inventory RENAME COLUMN purchase_price TO price;');
-  await db.exec('ALTER TABLE inventory RENAME COLUMN selling_price TO sale_price;');
-  await db.exec('ALTER TABLE inventory RENAME COLUMN stk_qty TO quantity;');
-
   console.log('Migration: UP complete');
 }
 
@@ -32,10 +28,6 @@ export async function down() {
   const db = await openDb();
 
   await db.exec('DROP TABLE sales');
-
-  await db.exec('ALTER TABLE inventory RENAME COLUMN price TO purchase_price;');
-  await db.exec('ALTER TABLE inventory RENAME COLUMN sale_price TO selling_price;');
-  await db.exec('ALTER TABLE inventory RENAME COLUMN quantity TO stk_qty;');
 
   console.log('Migration: DOWN complete');
 }
