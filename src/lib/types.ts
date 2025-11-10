@@ -5,8 +5,8 @@ export type Sale = {
   price: number;
   customer: string;
   date: string;
-  itemName: string;
-  itemCode: string;
+  item_name: string;
+  item_code: string;
   purchase_price: number;
   discount: number;
   final_price: number;
@@ -25,11 +25,11 @@ export type Purchase = {
 };
 
 export type InventoryItem = {
-  id: string;
+  id: number;
   name: string;
   sku: string;
   category: string;
-  stock: number;
+  stk_qty: number;
   lowStockThreshold: number;
   purchase_price: number;
   selling_price: number;

@@ -4,7 +4,15 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 interface InventoryItem {
   id: number;
@@ -12,6 +20,7 @@ interface InventoryItem {
   name: string;
   purchase_price: number;
   selling_price: number;
+  stk_qty: number;
   [key: string]: any;
 }
 
@@ -20,6 +29,7 @@ type AddSaleFormProps = {
 };
 
 export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
+  const { toast } = useToast();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [selectedSku, setSelectedSku] = useState<string | undefined>(undefined);
   const [quantity, setQuantity] = useState('1');
@@ -28,6 +38,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
   const [discount, setDiscount] = useState('0');
   const [customer, setCustomer] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchInventory() {
@@ -43,14 +54,14 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
     : null;
 
   const itemName = selectedItem?.name ?? '';
-  
+
   useEffect(() => {
     if (selectedItem) {
       setPurchasePrice(String(selectedItem.purchase_price || ''));
       setSellingPrice(String(selectedItem.selling_price || ''));
     } else {
-        setPurchasePrice('');
-        setSellingPrice('');
+      setPurchasePrice('');
+      setSellingPrice('');
     }
   }, [selectedItem]);
 
@@ -78,35 +89,83 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (!selectedItem) {
-      console.error('No item selected');
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Please select an item to sell.',
+      });
+      setIsLoading(false);
       return;
     }
 
-    const response = await fetch('/api/sales', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        product: selectedItem.id,
-        quantity: parseInt(quantity, 10),
-        price: numericSellingPrice,
-        customer,
-        date,
-        item_name: selectedItem.name,
-        item_code: selectedItem.sku,
-        purchase_price: numericPurchasePrice,
-        discount: numericDiscount,
-        final_price: finalPrice,
-        profit_amount: profitAmount,
-      }),
-    });
+    if (numericQuantity <= 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Quantity must be greater than zero.',
+      });
+      setIsLoading(false);
+      return;
+    }
 
-    if (response.ok) {
-      onSaleAdded();
-      resetForm();
+    if (numericQuantity > (selectedItem.stk_qty || 0)) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: `Not enough stock. Only ${selectedItem.stk_qty} available.`,
+        });
+        setIsLoading(false);
+        return;
+    }
+
+
+    try {
+      const response = await fetch('/api/sales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product: selectedItem.id,
+          quantity: parseInt(quantity, 10),
+          price: numericSellingPrice,
+          customer,
+          date,
+          item_name: selectedItem.name,
+          item_code: selectedItem.sku,
+          purchase_price: numericPurchasePrice,
+          discount: numericDiscount,
+          final_price: finalPrice,
+          profit_amount: profitAmount,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Sale added successfully.',
+        });
+        onSaleAdded();
+        resetForm();
+      } else {
+        const errorData = await response.json();
+        toast({
+          variant: 'destructive',
+          title: 'Error adding sale',
+          description: errorData.error || 'An unexpected error occurred.',
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to connect to the server.',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,7 +193,12 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           <Label htmlFor="itemName" className="text-right">
             Item Name
           </Label>
-          <Input id="itemName" value={itemName} className="col-span-3" readOnly />
+          <Input
+            id="itemName"
+            value={itemName}
+            className="col-span-3"
+            readOnly
+          />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="date" className="text-right">
@@ -158,6 +222,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             className="col-span-3"
+            min="1"
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
@@ -168,7 +233,6 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
             id="purchasePrice"
             type="number"
             value={purchasePrice}
-            onChange={(e) => setPurchasePrice(e.target.value)}
             className="col-span-3"
             readOnly
           />
@@ -235,7 +299,16 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           />
         </div>
         <div className="flex justify-end">
-          <Button type="submit">Add Sale</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Adding...
+              </>
+            ) : (
+              'Add Sale'
+            )}
+          </Button>
         </div>
       </div>
     </form>
