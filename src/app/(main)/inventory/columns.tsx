@@ -1,39 +1,68 @@
 'use client';
 
-import type { InventoryItem } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal } from 'lucide-react';
+import { ColumnDef } from '@tanstack/react-table';
 
-export const columns = [
-  { accessorKey: 'sku', header: 'SKU' },
-  { accessorKey: 'name', header: 'Name' },
+interface InventoryItem {
+  sku: string;
+  name: string;
+  category: string;
+  stk_qty: number;
+  low_stock_threshold: number;
+}
+
+export const columns = ({
+  onEdit,
+  onRemove,
+  onReceive,
+  onDispose,
+}: {
+  onEdit: (sku: string) => void;
+  onRemove: (sku: string) => void;
+  onReceive: (sku: string) => void;
+  onDispose: (sku: string) => void;
+}): ColumnDef<InventoryItem>[] => [
+  { accessorKey: 'sku', header: 'Item Code' },
+  { accessorKey: 'name', header: 'Item Name' },
   { accessorKey: 'category', header: 'Category' },
   {
-    accessorKey: 'stock',
+    accessorKey: 'stk_qty',
     header: 'Stock',
-    cell: (row: InventoryItem) => {
-      const isLowStock = row.stock < row.lowStockThreshold;
+    cell: ({ row }) => {
+      const { stk_qty, low_stock_threshold } = row.original;
+
+      if (stk_qty === null || stk_qty === undefined) {
+        return null;
+      }
+
+      const isLowStock = stk_qty < low_stock_threshold;
+
       return (
         <div className="flex items-center">
-          <span>{row.stock}</span>
-          {isLowStock && <Badge variant="destructive" className="ml-2">Low</Badge>}
+          <span>{stk_qty}</span>
+          {isLowStock && (
+            <Badge variant="destructive" className="ml-2">
+              Low
+            </Badge>
+          )}
         </div>
       );
     },
   },
-  { accessorKey: 'lowStockThreshold', header: 'Low Stock Threshold' },
+  { accessorKey: 'low_stock_threshold', header: 'Low Stock Threshold' },
   {
-    accessorKey: 'actions',
-    header: '',
-    cell: (row: InventoryItem) => (
+    id: 'actions',
+    cell: ({ row }) => (
       <div className="text-right">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -44,9 +73,22 @@ export const columns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>Receive Stock</DropdownMenuItem>
-            <DropdownMenuItem>Dispose Stock</DropdownMenuItem>
-            <DropdownMenuItem>Edit Item</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit(row.original.sku)}>
+              Edit Item
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onReceive(row.original.sku)}>
+              Receive Stock
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDispose(row.original.sku)}>
+              Dispose Stock
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-500"
+              onClick={() => onRemove(row.original.sku)}
+            >
+              Remove Inventory
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

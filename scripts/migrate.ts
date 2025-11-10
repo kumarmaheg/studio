@@ -8,7 +8,7 @@ async function migrate() {
     driver: sqlite3.Database,
   });
 
-  const migration = await readFile('migrations/001-add-date-to-sales.sql', 'utf-8');
+  const migration = await readFile('migrations/002-create-inventory.sql', 'utf-8');
   await db.exec(migration);
 
   console.log('Migration completed successfully.');
