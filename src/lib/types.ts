@@ -1,3 +1,4 @@
+
 export type Sale = {
   id: number;
   product?: string;

@@ -5,7 +5,7 @@ export async function GET(_req: NextRequest) {
   try {
     await up();
     return NextResponse.json({ message: 'Migration completed successfully' });
-  } catch (error) {
-    return NextResponse.json({ message: 'Migration failed', error }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ message: 'Migration failed', error: error.message }, { status: 500 });
   }
 }

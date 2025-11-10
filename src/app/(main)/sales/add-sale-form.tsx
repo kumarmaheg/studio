@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -234,7 +235,6 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
             id="purchasePrice"
             type="number"
             value={purchasePrice}
-            onChange={(e) => setPurchasePrice(e.target.value)}
             className="col-span-3"
             readOnly
           />

@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Sale } from '@/lib/types';

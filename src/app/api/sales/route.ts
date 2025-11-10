@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
   const { sku, quantity, price, customer, date, item_name, purchase_price, discount, final_price, profit_amount } = body;
 
   if (!sku || !quantity || !price || !date || !item_name) {
+    await db.close();
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
@@ -36,13 +37,13 @@ export async function POST(req: NextRequest) {
     // Commit transaction
     await db.exec('COMMIT');
     
+    await db.close();
     return NextResponse.json({ id: result.lastID });
   } catch (error) {
     // Rollback transaction in case of error
     await db.exec('ROLLBACK');
     console.error(error);
-    return NextResponse.json({ error: 'Failed to create sale' }, { status: 500 });
-  } finally {
     await db.close();
+    return NextResponse.json({ error: 'Failed to create sale' }, { status: 500 });
   }
 }
