@@ -66,6 +66,16 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
     setSelectedSku(sku);
   };
 
+  const resetForm = () => {
+    setSelectedSku(undefined);
+    setQuantity('1');
+    setSellingPrice('');
+    setPurchasePrice('');
+    setDiscount('0');
+    setCustomer('');
+    setDate(new Date().toISOString().split('T')[0]);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,8 +95,8 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
         price: numericSellingPrice,
         customer,
         date,
-        itemName: selectedItem.name,
-        itemCode: selectedItem.sku,
+        item_name: selectedItem.name,
+        item_code: selectedItem.sku,
         purchase_price: numericPurchasePrice,
         discount: numericDiscount,
         final_price: finalPrice,
@@ -96,14 +106,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
 
     if (response.ok) {
       onSaleAdded();
-      // Reset form
-      setSelectedSku(undefined);
-      setQuantity('1');
-      setSellingPrice('');
-      setPurchasePrice('');
-      setDiscount('0');
-      setCustomer('');
-      setDate(new Date().toISOString().split('T')[0]);
+      resetForm();
     }
   };
 

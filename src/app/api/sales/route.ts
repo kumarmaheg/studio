@@ -8,12 +8,13 @@ export async function GET(_req: NextRequest) {
     FROM sales s
     LEFT JOIN inventory i ON s.product = i.id
   `);
+  await db.close();
   return NextResponse.json(sales);
 }
 
 export async function POST(req: NextRequest) {
   const db = await openDb();
-  const { product, quantity, price, customer, date, itemName, itemCode, purchase_price, discount, final_price, profit_amount } = await req.json();
+  const { product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount } = await req.json();
 
   // Begin transaction
   await db.exec('BEGIN TRANSACTION');
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
   try {
     const result = await db.run(
       'INSERT INTO sales (product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [product, quantity, price, customer, date, itemName, itemCode, purchase_price, discount, final_price, profit_amount]
+      [product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount]
     );
 
     // Update inventory
