@@ -5,6 +5,12 @@ export type Sale = {
   price: number;
   customer: string;
   date: string;
+  itemName: string;
+  itemCode: string;
+  purchase_price: number;
+  discount: number;
+  final_price: number;
+  profit_amount: number;
 };
 
 export type Purchase = {

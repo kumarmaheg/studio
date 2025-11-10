@@ -46,8 +46,8 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
   
   useEffect(() => {
     if (selectedItem) {
-      setPurchasePrice(String(selectedItem.purchase_price || 0));
-      setSellingPrice(String(selectedItem.selling_price || 0));
+      setPurchasePrice(String(selectedItem.purchase_price || ''));
+      setSellingPrice(String(selectedItem.selling_price || ''));
     } else {
         setPurchasePrice('');
         setSellingPrice('');
@@ -80,11 +80,17 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        product: selectedItem.id, // API expects product ID
+        product: selectedItem.id,
         quantity: parseInt(quantity, 10),
-        price: finalPrice, // API expects final price
+        price: numericSellingPrice,
         customer,
         date,
+        itemName: selectedItem.name,
+        itemCode: selectedItem.sku,
+        purchase_price: numericPurchasePrice,
+        discount: numericDiscount,
+        final_price: finalPrice,
+        profit_amount: profitAmount,
       }),
     });
 

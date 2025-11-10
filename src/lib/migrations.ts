@@ -8,16 +8,17 @@ export async function up() {
   await db.exec(`
     CREATE TABLE sales (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product INTEGER,
+      quantity INTEGER,
+      price REAL,
+      customer TEXT,
+      date TEXT,
       item_name TEXT,
       item_code TEXT,
-      quantity INTEGER,
       purchase_price REAL,
-      sale_price REAL,
       discount REAL,
       final_price REAL,
-      profit_amount REAL,
-      customer TEXT,
-      date TEXT
+      profit_amount REAL
     );
   `);
 
