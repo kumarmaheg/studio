@@ -36,7 +36,7 @@ export default function SalesPage() {
   };
 
   return (
-    <>
+    <div>
       <PageHeader title="Sales">
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
@@ -59,6 +59,6 @@ export default function SalesPage() {
         </Sheet>
       </PageHeader>
       <DataTable columns={columns} data={sales} />
-    </>
+    </div>
   );
 }

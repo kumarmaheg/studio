@@ -11,39 +11,41 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { type ColumnDef } from '@tanstack/react-table';
 
-const statusVariantMap = {
+const statusVariantMap: { [key: string]: string } = {
   Pending: 'secondary',
   Ordered: 'outline',
   Received: 'default',
   Cancelled: 'destructive',
 };
 
-export const columns = [
+export const columns: ColumnDef<Purchase>[] = [
   { accessorKey: 'id', header: 'PO ID' },
   { accessorKey: 'supplier', header: 'Supplier' },
   { accessorKey: 'itemName', header: 'Item Name' },
   {
     accessorKey: 'total',
-    header: 'Total',
-    cell: (row: Purchase) => (
+    header: () => <div className="text-right">Total</div>,
+    cell: ({ row }) => (
       <div className="font-medium text-right">
-        {row.total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+        {row.original.total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
       </div>
     ),
   },
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: (row: Purchase) => (
-      <Badge variant={statusVariantMap[row.status] as any}>{row.status}</Badge>
+    cell: ({ row }) => (
+      <Badge variant={statusVariantMap[row.original.status] as any}>{row.original.status}</Badge>
     ),
   },
   { accessorKey: 'date', header: 'Date' },
   {
-    accessorKey: 'actions',
-    header: '',
-    cell: (row: Purchase) => (
+    id: 'actions',
+    cell: ({ row }) => {
+      const purchase = row.original;
+      return (
         <div className="text-right">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -60,6 +62,6 @@ export const columns = [
           </DropdownMenuContent>
         </DropdownMenu>
         </div>
-    ),
+    )},
   },
 ];

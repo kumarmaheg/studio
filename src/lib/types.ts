@@ -1,10 +1,9 @@
 export type Sale = {
-  id: string;
-  itemName: string;
+  id: string | number;
+  product: string;
   quantity: number;
   price: number;
-  tax: number;
-  total: number;
+  customer: string;
   date: string;
 };
 
@@ -26,6 +25,8 @@ export type InventoryItem = {
   category: string;
   stock: number;
   lowStockThreshold: number;
+  price: number;
+  sale_price: number;
 };
 
 export type Expense = {
