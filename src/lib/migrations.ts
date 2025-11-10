@@ -6,7 +6,7 @@ export async function up() {
   const db = await openDb();
 
   await db.exec(`
-    CREATE TABLE sales (
+    CREATE TABLE IF NOT EXISTS sales (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product INTEGER,
       quantity INTEGER,
@@ -18,7 +18,8 @@ export async function up() {
       purchase_price REAL,
       discount REAL,
       final_price REAL,
-      profit_amount REAL
+      profit_amount REAL,
+      FOREIGN KEY (product) REFERENCES inventory(id)
     );
   `);
 
@@ -28,7 +29,7 @@ export async function up() {
 export async function down() {
   const db = await openDb();
 
-  await db.exec('DROP TABLE sales');
+  await db.exec('DROP TABLE IF EXISTS sales');
 
   console.log('Migration: DOWN complete');
 }

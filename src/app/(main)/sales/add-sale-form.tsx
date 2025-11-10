@@ -43,8 +43,10 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
   useEffect(() => {
     async function fetchInventory() {
       const res = await fetch('/api/inventory');
-      const data = await res.json();
-      setInventory(data);
+      if (res.ok) {
+        const data = await res.json();
+        setInventory(data);
+      }
     }
     fetchInventory();
   }, []);

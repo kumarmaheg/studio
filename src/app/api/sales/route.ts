@@ -14,7 +14,12 @@ export async function GET(_req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const db = await openDb();
-  const { product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount } = await req.json();
+  const body = await req.json();
+  const { product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount } = body;
+
+  if (!product || !quantity || !price || !date || !item_name || !item_code) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  }
 
   // Begin transaction
   await db.exec('BEGIN TRANSACTION');
