@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(_req: NextRequest) {
   const db = await openDb();
   const sales = await db.all(`
-    SELECT s.id, i.name as product, s.quantity, s.price, s.customer, s.date, s.item_name, s.item_code, s.purchase_price, s.discount, s.final_price, s.profit_amount
+    SELECT s.id, i.name as product, s.quantity, s.price, s.customer, s.date, s.item_name, s.sku, s.purchase_price, s.discount, s.final_price, s.profit_amount
     FROM sales s
-    LEFT JOIN inventory i ON s.product = i.id
+    LEFT JOIN inventory i ON s.sku = i.sku
   `);
   await db.close();
   return NextResponse.json(sales);
@@ -15,9 +15,9 @@ export async function GET(_req: NextRequest) {
 export async function POST(req: NextRequest) {
   const db = await openDb();
   const body = await req.json();
-  const { product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount } = body;
+  const { sku, quantity, price, customer, date, item_name, purchase_price, discount, final_price, profit_amount } = body;
 
-  if (!product || !quantity || !price || !date || !item_name || !item_code) {
+  if (!sku || !quantity || !price || !date || !item_name) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
@@ -26,12 +26,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await db.run(
-      'INSERT INTO sales (product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [product, quantity, price, customer, date, item_name, item_code, purchase_price, discount, final_price, profit_amount]
+      'INSERT INTO sales (sku, quantity, price, customer, date, item_name, purchase_price, discount, final_price, profit_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [sku, quantity, price, customer, date, item_name, purchase_price, discount, final_price, profit_amount]
     );
 
     // Update inventory
-    await db.run('UPDATE inventory SET stk_qty = stk_qty - ? WHERE id = ?', [quantity, product]);
+    await db.run('UPDATE inventory SET stk_qty = stk_qty - ? WHERE sku = ?', [quantity, sku]);
 
     // Commit transaction
     await db.exec('COMMIT');

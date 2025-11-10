@@ -8,18 +8,17 @@ export async function up() {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS sales (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      product INTEGER,
-      quantity INTEGER,
-      price REAL,
+      sku TEXT NOT NULL,
+      quantity INTEGER NOT NULL,
+      price REAL NOT NULL,
       customer TEXT,
-      date TEXT,
-      item_name TEXT,
-      item_code TEXT,
+      date TEXT NOT NULL,
+      item_name TEXT NOT NULL,
       purchase_price REAL,
       discount REAL,
       final_price REAL,
       profit_amount REAL,
-      FOREIGN KEY (product) REFERENCES inventory(id)
+      FOREIGN KEY (sku) REFERENCES inventory(sku)
     );
   `);
 

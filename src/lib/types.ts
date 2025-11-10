@@ -1,12 +1,12 @@
 export type Sale = {
   id: string | number;
-  product: string;
+  product?: string;
   quantity: number;
   price: number;
   customer: string;
   date: string;
   item_name: string;
-  item_code: string;
+  sku: string;
   purchase_price: number;
   discount: number;
   final_price: number;

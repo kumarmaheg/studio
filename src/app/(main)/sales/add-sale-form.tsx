@@ -123,7 +123,6 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
         return;
     }
 
-
     try {
       const response = await fetch('/api/sales', {
         method: 'POST',
@@ -131,13 +130,12 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          product: selectedItem.id,
+          sku: selectedItem.sku,
           quantity: parseInt(quantity, 10),
           price: numericSellingPrice,
           customer,
           date,
           item_name: selectedItem.name,
-          item_code: selectedItem.sku,
           purchase_price: numericPurchasePrice,
           discount: numericDiscount,
           final_price: finalPrice,
@@ -159,6 +157,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
           title: 'Error adding sale',
           description: errorData.error || 'An unexpected error occurred.',
         });
+
       }
     } catch (error) {
       toast({
@@ -235,6 +234,7 @@ export function AddSaleForm({ onSaleAdded }: AddSaleFormProps) {
             id="purchasePrice"
             type="number"
             value={purchasePrice}
+            onChange={(e) => setPurchasePrice(e.target.value)}
             className="col-span-3"
             readOnly
           />
