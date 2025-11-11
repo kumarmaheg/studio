@@ -38,7 +38,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full max-w-7xl border shadow-lg rounded-lg">
       <div>
-        <Table className="text-lg">
+        <Table className="text-sm">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -87,7 +87,7 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-center space-x-2 py-4">
         <Button
           variant="outline"
-          size="lg"
+          size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
         </Button>
         <Button
           variant="outline"
-          size="lg"
+          size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
