@@ -40,7 +40,7 @@ export type InventoryItem = {
 };
 
 export type Expense = {
-  id: string;
+  id: number;
   date: string;
   category: 'Rent' | 'Utilities' | 'Salaries' | 'Marketing' | 'Supplies' | 'Other';
   amount: number;
@@ -48,7 +48,7 @@ export type Expense = {
 };
 
 export type Investment = {
-  id:string;
+  id: number;
   date: string;
   amount: number;
   description: string;
