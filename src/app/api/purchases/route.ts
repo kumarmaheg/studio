@@ -10,6 +10,7 @@ export async function GET(_req: NextRequest) {
         p.supplier,
         p.sku,
         i.name as item_name,
+        i.category,
         p.quantity,
         p.purchase_price,
         p.total,

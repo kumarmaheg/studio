@@ -8,6 +8,7 @@ export async function GET(_req: NextRequest) {
       SELECT 
         s.id, 
         s.item_name, 
+        i.category,
         s.quantity, 
         s.price, 
         s.customer, 
@@ -18,6 +19,8 @@ export async function GET(_req: NextRequest) {
         s.final_price, 
         s.profit_amount
       FROM sales s
+      JOIN inventory i ON s.sku = i.sku
+      ORDER BY s.date DESC, s.id DESC
     `);
     return NextResponse.json(sales);
   } finally {
@@ -27,16 +30,16 @@ export async function GET(_req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const db = await openDb();
-  const body = await req.json();
-  const { sku, quantity, price, customer, date } = body;
-
-  if (!sku || !quantity || !price || !date) {
-    await db.close();
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-  }
-
   try {
     await db.exec('BEGIN TRANSACTION');
+
+    const body = await req.json();
+    const { sku, quantity, price, discount, customer, date } = body;
+
+    if (!sku || !quantity || !price || !date) {
+      await db.exec('ROLLBACK');
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
 
     const item = await db.get('SELECT * FROM inventory WHERE sku = ?', [sku]);
 
@@ -50,8 +53,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Not enough stock available' }, { status: 400 });
     }
 
-    const discount = parseFloat(body.discount) || 0;
-    const final_price = (price * quantity) - discount;
+    const final_price = (price * quantity) - (discount || 0);
     const profit_amount = final_price - (item.purchase_price * quantity);
     
     const result = await db.run(

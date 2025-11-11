@@ -8,6 +8,7 @@ export type Sale = {
   date: string;
   item_name: string;
   sku: string;
+  category: string;
   purchase_price: number;
   discount: number;
   final_price: number;
@@ -19,6 +20,7 @@ export type Purchase = {
   supplier: string;
   sku: string;
   item_name?: string;
+  category: string;
   quantity: number;
   purchase_price: number;
   total: number;

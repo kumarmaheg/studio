@@ -28,6 +28,7 @@ export const columns = ({ onStatusChange }: ColumnsProps): ColumnDef<Purchase>[]
   { accessorKey: 'id', header: 'PO ID' },
   { accessorKey: 'supplier', header: 'Supplier' },
   { accessorKey: 'item_name', header: 'Item Name' },
+  { accessorKey: 'category', header: 'Category' },
   {
     accessorKey: 'total',
     header: () => <div className="text-right">Total</div>,
