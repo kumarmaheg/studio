@@ -15,11 +15,12 @@ export type Sale = {
 };
 
 export type Purchase = {
-  id: string;
+  id: number;
   supplier: string;
-  itemName: string;
+  sku: string;
+  item_name?: string;
   quantity: number;
-  price: number;
+  purchase_price: number;
   total: number;
   status: 'Pending' | 'Ordered' | 'Received' | 'Cancelled';
   date: string;

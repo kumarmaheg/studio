@@ -20,10 +20,14 @@ const statusVariantMap: { [key: string]: string } = {
   Cancelled: 'destructive',
 };
 
-export const columns: ColumnDef<Purchase>[] = [
+type ColumnsProps = {
+  onStatusChange: (id: number, status: string) => void;
+};
+
+export const columns = ({ onStatusChange }: ColumnsProps): ColumnDef<Purchase>[] => [
   { accessorKey: 'id', header: 'PO ID' },
   { accessorKey: 'supplier', header: 'Supplier' },
-  { accessorKey: 'itemName', header: 'Item Name' },
+  { accessorKey: 'item_name', header: 'Item Name' },
   {
     accessorKey: 'total',
     header: () => <div className="text-right">Total</div>,
@@ -56,9 +60,19 @@ export const columns: ColumnDef<Purchase>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem>Mark as Received</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">Cancel Order</DropdownMenuItem>
+            {purchase.status !== 'Received' && purchase.status !== 'Cancelled' && (
+              <DropdownMenuItem onClick={() => onStatusChange(purchase.id, 'Received')}>
+                Mark as Received
+              </DropdownMenuItem>
+            )}
+            {purchase.status !== 'Cancelled' && (
+               <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => onStatusChange(purchase.id, 'Cancelled')}
+               >
+                 Cancel Order
+               </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         </div>

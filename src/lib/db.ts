@@ -22,5 +22,19 @@ export async function openDb() {
     );
   `);
 
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS purchases (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sku TEXT NOT NULL,
+      supplier TEXT,
+      quantity INTEGER NOT NULL,
+      purchase_price REAL NOT NULL,
+      total REAL NOT NULL,
+      status TEXT NOT NULL,
+      date TEXT NOT NULL,
+      FOREIGN KEY (sku) REFERENCES inventory(sku)
+    );
+  `);
+
   return db;
 }
