@@ -122,6 +122,7 @@ export default function ExpensesPage() {
             </SheetHeader>
             <div className="py-4">
               <AddExpenseForm
+                key={expenseToEdit ? expenseToEdit.id : 'new'}
                 onSuccess={handleSuccess}
                 expenseToEdit={expenseToEdit}
               />
