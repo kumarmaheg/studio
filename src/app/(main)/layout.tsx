@@ -61,7 +61,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               <UserNav />
             </div>
           </header>
-          <main className="flex flex-1 flex-col items-center p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="flex flex-1 flex-col p-4 sm:p-6 lg:p-8">{children}</main>
         </div>
       </div>
     </SidebarProvider>

@@ -36,7 +36,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full max-w-7xl border shadow-lg rounded-lg">
+    <div className="w-full border shadow-lg rounded-lg">
       <div>
         <Table className="text-sm">
           <TableHeader>
