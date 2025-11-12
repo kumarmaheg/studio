@@ -46,6 +46,7 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
       setDescription(expenseToEdit.description || '');
       setAmount(String(expenseToEdit.amount));
     } else {
+      // Reset form for adding a new expense
       setDate(new Date().toISOString().split('T')[0]);
       setCategory(undefined);
       setDescription('');
