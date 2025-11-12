@@ -50,7 +50,7 @@ export type Expense = {
 export type Investment = {
   id: number;
   date: string;
-  amount: number;
-  reason: string;
   invested_by: string;
+  reason: string;
+  amount: number;
 };

@@ -63,10 +63,6 @@ export async function openDb() {
       amount REAL NOT NULL
     );
   `);
-
-  // We are dropping the table to add new columns.
-  // In a real-world scenario, a proper migration script (e.g., using ALTER TABLE) would be better.
-  await db.exec(`DROP TABLE IF EXISTS investments;`);
   
   await db.exec(`
     CREATE TABLE IF NOT EXISTS investments (
