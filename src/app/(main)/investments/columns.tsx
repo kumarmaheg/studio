@@ -12,7 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { type ColumnDef } from '@tanstack/react-table';
 
-export const columns: ColumnDef<Investment>[] = [
+type ColumnsProps = {
+  onEdit: (investment: Investment) => void;
+  onDelete: (id: number) => void;
+}
+
+export const columns = ({ onEdit, onDelete }: ColumnsProps): ColumnDef<Investment>[] => [
   {
     accessorKey: 'date',
     header: 'Date',
@@ -40,6 +45,7 @@ export const columns: ColumnDef<Investment>[] = [
   {
     id: 'actions',
     cell: ({ row }) => {
+      const investment = row.original;
       return (
         <div className="text-right">
           <DropdownMenu>
@@ -51,8 +57,11 @@ export const columns: ColumnDef<Investment>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem disabled>Edit Investment</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive" disabled>
+              <DropdownMenuItem onClick={() => onEdit(investment)}>Edit Investment</DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => onDelete(investment.id)}
+              >
                 Delete Investment
               </DropdownMenuItem>
             </DropdownMenuContent>

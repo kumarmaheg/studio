@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,51 +11,69 @@ import type { Investment } from '@/lib/types';
 
 type AddInvestmentFormProps = {
   onSuccess: () => void;
+  investmentToEdit?: Investment | null;
 };
 
-export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
-  const { toast } = useToast();
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [reason, setReason] = useState('');
-  const [investedBy, setInvestedBy] = useState('');
-  const [amount, setAmount] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const resetForm = () => {
-    setDate(new Date().toISOString().split('T')[0]);
-    setReason('');
-    setInvestedBy('');
-    setAmount('');
+const getInitialFormData = (investment: Investment | null | undefined) => {
+  if (investment) {
+    return {
+      date: new Date(investment.date).toISOString().split('T')[0],
+      reason: investment.reason || '',
+      invested_by: investment.invested_by || '',
+      amount: String(investment.amount),
+    };
+  }
+  return {
+    date: new Date().toISOString().split('T')[0],
+    reason: '',
+    invested_by: '',
+    amount: '',
   };
+};
 
+export function AddInvestmentForm({ onSuccess, investmentToEdit }: AddInvestmentFormProps) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState(getInitialFormData(investmentToEdit));
+  const [isLoading, setIsLoading] = useState(false);
+  const isEditMode = !!investmentToEdit;
+
+  useEffect(() => {
+    setFormData(getInitialFormData(investmentToEdit));
+  }, [investmentToEdit]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    const url = isEditMode ? `/api/investments/${investmentToEdit.id}` : '/api/investments';
+    const method = isEditMode ? 'PUT' : 'POST';
+    
     try {
-      const response = await fetch('/api/investments', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date,
-          reason,
-          invested_by: investedBy,
-          amount: parseFloat(amount),
+          ...formData,
+          amount: parseFloat(formData.amount),
         }),
       });
 
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Investment added successfully.',
+          description: `Investment ${isEditMode ? 'updated' : 'added'} successfully.`,
         });
-        resetForm();
         onSuccess();
       } else {
         const errorData = await response.json();
         toast({
           variant: 'destructive',
-          title: 'Error adding investment',
+          title: `Error ${isEditMode ? 'updating' : 'adding'} investment`,
           description: errorData.error || 'An unexpected error occurred.',
         });
       }
@@ -79,20 +97,20 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
         <Input
           id="date"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={formData.date}
+          onChange={handleInputChange}
           className="col-span-3"
           required
         />
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="investedBy" className="text-right">
+        <Label htmlFor="invested_by" className="text-right">
           Invested By
         </Label>
         <Input
-          id="investedBy"
-          value={investedBy}
-          onChange={(e) => setInvestedBy(e.target.value)}
+          id="invested_by"
+          value={formData.invested_by}
+          onChange={handleInputChange}
           className="col-span-3"
           placeholder="e.g., John Doe"
         />
@@ -103,8 +121,8 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
         </Label>
         <Textarea
           id="reason"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
+          value={formData.reason}
+          onChange={handleInputChange}
           className="col-span-3"
           placeholder="e.g., Initial capital investment"
         />
@@ -117,8 +135,8 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
           id="amount"
           type="number"
           step="0.01"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={formData.amount}
+          onChange={handleInputChange}
           className="col-span-3"
           placeholder="0.00"
           required
@@ -132,7 +150,7 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
               Saving...
             </>
           ) : (
-            'Add Investment'
+            isEditMode ? 'Save Changes' : 'Add Investment'
           )}
         </Button>
       </div>
