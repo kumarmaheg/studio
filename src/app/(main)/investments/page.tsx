@@ -3,7 +3,6 @@
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { investments } from '@/lib/data';
 import { DataTable } from '@/components/data-table';
 import { columns } from './columns';
 import {
@@ -14,14 +13,40 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useEffect, useState } from 'react';
+import type { Investment } from '@/lib/types';
+import { AddInvestmentForm } from './add-investment-form';
 
 export default function InvestmentsPage() {
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const fetchInvestments = async () => {
+    setLoading(true);
+    const res = await fetch('/api/investments');
+    if (res.ok) {
+      const data = await res.json();
+      setInvestments(data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchInvestments();
+  }, []);
+
+  const handleSuccess = () => {
+    setIsSheetOpen(false);
+    fetchInvestments();
+  };
+
   return (
     <>
       <PageHeader title="Investments">
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <Button>
+            <Button onClick={() => setIsSheetOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Investment
             </Button>
@@ -33,11 +58,17 @@ export default function InvestmentsPage() {
                 Record a new investment into the business.
               </SheetDescription>
             </SheetHeader>
-            <div className="py-4">{/* Add Investment Form will go here */}</div>
+            <div className="py-4">
+              <AddInvestmentForm onSuccess={handleSuccess} />
+            </div>
           </SheetContent>
         </Sheet>
       </PageHeader>
-      <DataTable columns={columns} data={investments} />
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <DataTable columns={columns} data={investments} />
+      )}
     </>
   );
 }
