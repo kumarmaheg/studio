@@ -29,7 +29,7 @@ export default function DashboardPage() {
   }, []);
   
   return (
-    <>
+    <div className="w-full">
       <PageHeader title="Dashboard" />
       {overview ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -78,6 +78,6 @@ export default function DashboardPage() {
           <RecentTransactions />
         </div>
       </div>
-    </>
+    </div>
   );
 }
