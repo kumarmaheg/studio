@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,8 @@ import { Loader2 } from 'lucide-react';
 import type { Expense } from '@/lib/types';
 
 type AddExpenseFormProps = {
-  onExpenseAdded: () => void;
+  onSuccess: () => void;
+  expenseToEdit?: Expense | null;
 };
 
 const expenseCategories: Expense['category'][] = [
@@ -29,13 +30,28 @@ const expenseCategories: Expense['category'][] = [
   'Other',
 ];
 
-export function AddExpenseForm({ onExpenseAdded }: AddExpenseFormProps) {
+export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps) {
   const { toast } = useToast();
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState('');
   const [category, setCategory] = useState<string | undefined>(undefined);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const isEditMode = !!expenseToEdit;
+
+  useEffect(() => {
+    if (expenseToEdit) {
+      setDate(new Date(expenseToEdit.date).toISOString().split('T')[0]);
+      setCategory(expenseToEdit.category);
+      setDescription(expenseToEdit.description || '');
+      setAmount(String(expenseToEdit.amount));
+    } else {
+      setDate(new Date().toISOString().split('T')[0]);
+      setCategory(undefined);
+      setDescription('');
+      setAmount('');
+    }
+  }, [expenseToEdit]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +67,12 @@ export function AddExpenseForm({ onExpenseAdded }: AddExpenseFormProps) {
       return;
     }
 
+    const url = isEditMode ? `/api/expenses/${expenseToEdit.id}` : '/api/expenses';
+    const method = isEditMode ? 'PUT' : 'POST';
+
     try {
-      const response = await fetch('/api/expenses', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date,
@@ -66,14 +85,14 @@ export function AddExpenseForm({ onExpenseAdded }: AddExpenseFormProps) {
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Expense added successfully.',
+          description: `Expense ${isEditMode ? 'updated' : 'added'} successfully.`,
         });
-        onExpenseAdded();
+        onSuccess();
       } else {
         const errorData = await response.json();
         toast({
           variant: 'destructive',
-          title: 'Error adding expense',
+          title: `Error ${isEditMode ? 'updating' : 'adding'} expense`,
           description: errorData.error || 'An unexpected error occurred.',
         });
       }
@@ -100,6 +119,7 @@ export function AddExpenseForm({ onExpenseAdded }: AddExpenseFormProps) {
           value={date}
           onChange={(e) => setDate(e.target.value)}
           className="col-span-3"
+          required
         />
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
@@ -143,6 +163,7 @@ export function AddExpenseForm({ onExpenseAdded }: AddExpenseFormProps) {
           onChange={(e) => setAmount(e.target.value)}
           className="col-span-3"
           placeholder="0.00"
+          required
         />
       </div>
       <div className="flex justify-end">
@@ -150,10 +171,10 @@ export function AddExpenseForm({ onExpenseAdded }: AddExpenseFormProps) {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Adding...
+              Saving...
             </>
           ) : (
-            'Add Expense'
+            isEditMode ? 'Save Changes' : 'Add Expense'
           )}
         </Button>
       </div>

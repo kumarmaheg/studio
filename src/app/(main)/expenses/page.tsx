@@ -13,14 +13,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useEffect, useState } from 'react';
 import type { Expense } from '@/lib/types';
 import { AddExpenseForm } from './add-expense-form';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ExpensesPage() {
+  const { toast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [expenseIdToDelete, setExpenseIdToDelete] = useState<number | null>(null);
 
   const fetchExpenses = async () => {
     setLoading(true);
@@ -36,8 +51,55 @@ export default function ExpensesPage() {
     fetchExpenses();
   }, []);
 
-  const handleExpenseAdded = () => {
+  const handleAddClick = () => {
+    setExpenseToEdit(null);
+    setIsSheetOpen(true);
+  };
+
+  const handleEditClick = (expense: Expense) => {
+    setExpenseToEdit(expense);
+    setIsSheetOpen(true);
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setExpenseIdToDelete(id);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!expenseIdToDelete) return;
+    try {
+      const response = await fetch(`/api/expenses/${expenseIdToDelete}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Expense deleted successfully.',
+        });
+        fetchExpenses();
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to delete expense.',
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to connect to the server.',
+      });
+    } finally {
+      setIsDeleteAlertOpen(false);
+      setExpenseIdToDelete(null);
+    }
+  };
+
+  const handleSuccess = () => {
     setIsSheetOpen(false);
+    setExpenseToEdit(null);
     fetchExpenses();
   };
 
@@ -46,20 +108,23 @@ export default function ExpensesPage() {
       <PageHeader title="Expenses">
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <Button onClick={() => setIsSheetOpen(true)}>
+            <Button onClick={handleAddClick}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Expense
             </Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>Add New Expense</SheetTitle>
+              <SheetTitle>{expenseToEdit ? 'Edit Expense' : 'Add New Expense'}</SheetTitle>
               <SheetDescription>
-                Record a new business expense.
+                {expenseToEdit ? 'Update the details of your business expense.' : 'Record a new business expense.'}
               </SheetDescription>
             </SheetHeader>
             <div className="py-4">
-              <AddExpenseForm onExpenseAdded={handleExpenseAdded} />
+              <AddExpenseForm
+                onSuccess={handleSuccess}
+                expenseToEdit={expenseToEdit}
+              />
             </div>
           </SheetContent>
         </Sheet>
@@ -67,8 +132,29 @@ export default function ExpensesPage() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <DataTable columns={columns} data={expenses} />
+        <DataTable
+          columns={columns({ onEdit: handleEditClick, onDelete: handleDeleteClick })}
+          data={expenses}
+        />
       )}
+       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this expense record.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setExpenseIdToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Yes, delete it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
