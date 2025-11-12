@@ -30,35 +30,47 @@ const expenseCategories: Expense['category'][] = [
   'Other',
 ];
 
+const getInitialFormData = (expense: Expense | null | undefined) => {
+  if (expense) {
+    return {
+      date: new Date(expense.date).toISOString().split('T')[0],
+      category: expense.category,
+      description: expense.description || '',
+      amount: String(expense.amount),
+    };
+  }
+  return {
+    date: new Date().toISOString().split('T')[0],
+    category: '',
+    description: '',
+    amount: '',
+  };
+};
+
 export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps) {
   const { toast } = useToast();
-  const [date, setDate] = useState('');
-  const [category, setCategory] = useState<string | undefined>(undefined);
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
+  const [formData, setFormData] = useState(getInitialFormData(expenseToEdit));
   const [isLoading, setIsLoading] = useState(false);
   const isEditMode = !!expenseToEdit;
 
   useEffect(() => {
-    if (expenseToEdit) {
-      setDate(new Date(expenseToEdit.date).toISOString().split('T')[0]);
-      setCategory(expenseToEdit.category);
-      setDescription(expenseToEdit.description || '');
-      setAmount(String(expenseToEdit.amount));
-    } else {
-      // Reset form for adding a new expense
-      setDate(new Date().toISOString().split('T')[0]);
-      setCategory(undefined);
-      setDescription('');
-      setAmount('');
-    }
+    setFormData(getInitialFormData(expenseToEdit));
   }, [expenseToEdit]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, category: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!category) {
+    if (!formData.category) {
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -76,10 +88,8 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date,
-          category,
-          description,
-          amount: parseFloat(amount),
+          ...formData,
+          amount: parseFloat(formData.amount),
         }),
       });
 
@@ -117,8 +127,8 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
         <Input
           id="date"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={formData.date}
+          onChange={handleInputChange}
           className="col-span-3"
           required
         />
@@ -127,7 +137,7 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
         <Label htmlFor="category" className="text-right">
           Category
         </Label>
-        <Select value={category} onValueChange={setCategory}>
+        <Select value={formData.category} onValueChange={handleCategoryChange}>
           <SelectTrigger className="col-span-3">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
@@ -146,8 +156,8 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
         </Label>
         <Textarea
           id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={handleInputChange}
           className="col-span-3"
           placeholder="e.g., Office rent for May"
         />
@@ -160,8 +170,8 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
           id="amount"
           type="number"
           step="0.01"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={formData.amount}
+          onChange={handleInputChange}
           className="col-span-3"
           placeholder="0.00"
           required
