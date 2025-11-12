@@ -24,12 +24,19 @@ export default function InvestmentsPage() {
 
   const fetchInvestments = async () => {
     setLoading(true);
-    const res = await fetch('/api/investments');
-    if (res.ok) {
-      const data = await res.json();
-      setInvestments(data);
+    try {
+      const res = await fetch('/api/investments');
+      if (res.ok) {
+        const data = await res.json();
+        setInvestments(data);
+      } else {
+        console.error('Failed to fetch investments');
+      }
+    } catch (error) {
+      console.error('Error fetching investments:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
