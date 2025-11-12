@@ -21,6 +21,13 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const resetForm = () => {
+    setDate(new Date().toISOString().split('T')[0]);
+    setReason('');
+    setInvestedBy('');
+    setAmount('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -42,6 +49,7 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
           title: 'Success',
           description: 'Investment added successfully.',
         });
+        resetForm();
         onSuccess();
       } else {
         const errorData = await response.json();
