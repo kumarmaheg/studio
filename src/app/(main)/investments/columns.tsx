@@ -23,7 +23,7 @@ export const columns: ColumnDef<Investment>[] = [
     },
   },
   { accessorKey: 'invested_by', header: 'Invested By' },
-  { accessorKey: 'reason', header: 'Reason' },
+  { accessorKey: 'reason', header: 'Investment Reason' },
   {
     accessorKey: 'amount',
     header: () => <div className="text-right">Amount</div>,
