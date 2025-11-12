@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(_req: NextRequest) {
   const db = await openDb();
   try {
-    const investments = await db.all('SELECT * FROM investments ORDER BY date DESC');
+    const investments = await db.all('SELECT id, date, invested_by, reason, amount FROM investments ORDER BY date DESC');
     return NextResponse.json(investments);
   } finally {
     await db.close();
