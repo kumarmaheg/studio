@@ -64,11 +64,16 @@ export async function openDb() {
     );
   `);
 
+  // We are dropping the table to add new columns.
+  // In a real-world scenario, a proper migration script (e.g., using ALTER TABLE) would be better.
+  await db.exec(`DROP TABLE IF EXISTS investments;`);
+  
   await db.exec(`
     CREATE TABLE IF NOT EXISTS investments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT NOT NULL,
-      description TEXT,
+      invested_by TEXT,
+      reason TEXT,
       amount REAL NOT NULL
     );
   `);

@@ -16,7 +16,8 @@ type AddInvestmentFormProps = {
 export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
   const { toast } = useToast();
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [description, setDescription] = useState('');
+  const [reason, setReason] = useState('');
+  const [investedBy, setInvestedBy] = useState('');
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +31,8 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date,
-          description,
+          reason,
+          invested_by: investedBy,
           amount: parseFloat(amount),
         }),
       });
@@ -76,13 +78,25 @@ export function AddInvestmentForm({ onSuccess }: AddInvestmentFormProps) {
         />
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="description" className="text-right">
-          Description
+        <Label htmlFor="investedBy" className="text-right">
+          Invested By
+        </Label>
+        <Input
+          id="investedBy"
+          value={investedBy}
+          onChange={(e) => setInvestedBy(e.target.value)}
+          className="col-span-3"
+          placeholder="e.g., John Doe"
+        />
+      </div>
+      <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="reason" className="text-right">
+          Investment Reason
         </Label>
         <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          id="reason"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
           className="col-span-3"
           placeholder="e.g., Initial capital investment"
         />

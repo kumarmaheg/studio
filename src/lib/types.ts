@@ -51,5 +51,6 @@ export type Investment = {
   id: number;
   date: string;
   amount: number;
-  description: string;
+  reason: string;
+  invested_by: string;
 };

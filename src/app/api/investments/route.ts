@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest) {
 export async function POST(req: NextRequest) {
   const db = await openDb();
   const body = await req.json();
-  const { date, description, amount } = body;
+  const { date, reason, invested_by, amount } = body;
 
   if (!date || !amount) {
     await db.close();
@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await db.run(
-      'INSERT INTO investments (date, description, amount) VALUES (?, ?, ?)',
-      [date, description, parseFloat(amount)]
+      'INSERT INTO investments (date, invested_by, reason, amount) VALUES (?, ?, ?, ?)',
+      [date, invested_by, reason, parseFloat(amount)]
     );
     
     return NextResponse.json({ id: result.lastID });
