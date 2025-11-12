@@ -126,7 +126,7 @@ export function AddExpenseForm({ onSuccess, expenseToEdit }: AddExpenseFormProps
         <Label htmlFor="category" className="text-right">
           Category
         </Label>
-        <Select onValueChange={setCategory} value={category}>
+        <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="col-span-3">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
